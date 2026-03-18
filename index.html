@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nasza Rocznica: Wyzwanie Serca ❤️</title>
+    <style>
+        /* NOWA PALETA KOLORÓW: Mniej różu, więcej błękitu i bieli */
+        :root { 
+            --accent-red: #ff4757; /* Bardziej żywy, mniej różowy czerwony */
+            --dark-red: #da1212; 
+            --bg-color: #f1f2f6; /* Bardzo jasny błękit/szary jako tło */
+            --card-bg: #ffffff; /* Białe tło dla kart i galerii */
+            --text-color: #2f3542; /* Ciemnoszary, nie czarny text */
+        }
+        
+        body { 
+            margin: 0; 
+            background: var(--bg-color); 
+            font-family: 'Segoe UI', Roboto, sans-serif; 
+            color: var(--text-color); 
+            overflow-x: hidden; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            min-height: 100vh; 
+        }
+        
+        /* EKRAN STARTOWY I GRY - Ulepszony styl kart */
+        #game-container, #start-screen { 
+            text-align: center; 
+            max-width: 450px; 
+            padding: 30px; 
+            margin-top: 50px; 
+            background: var(--card-bg); 
+            border-radius: 20px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05); 
+        }
+
+        canvas { 
+            background: #fff; 
+            border: 4px solid var(--accent-red); 
+            border-radius: 15px; 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1); 
+            cursor: none; 
+            display: none; 
+            max-width: 100%; 
+            touch-action: none; /* Ważne dla urządzeń dotykowych */
+            margin-top: 20px;
+        }
+
+        /* Twoje oryginalne tytuły H1, ale w nowym kolorze */
+        h1 { color: var(--accent-red); font-size: 2.2rem; margin-bottom: 15px; }
+        
+        /* Ulepszony przycisk */
+        .btn { 
+            background: var(--accent-red); 
+            color: white; 
+            border: none; 
+            padding: 18px 40px; 
+            font-size: 1.3rem; 
+            border-radius: 50px; 
+            cursor: pointer; 
+            transition: 0.3scubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            margin-top: 30px; 
+            box-shadow: 0 5px 15px rgba(255,71,87,0.3);
+            font-weight: bold;
+        }
+        .btn:hover { background: var(--dark-red); transform: translateY(-3px); }
+        
+        /* Punkty w kolorze akcentu */
+        .stat { font-size: 1.5rem; margin: 15px 0; font-weight: bold; color: var(--accent-red); }
+
+        /* SEKCJA NAGRODY - Przejście do czystej bieli */
+        #reward-section { 
+            display: none; 
+            width: 100%; 
+            max-width: 900px; 
+            padding: 60px 20px; 
+            text-align: center; 
+            background: #fff;
+            animation: fadeIn 2s ease-out; 
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Twoje oryginalne style dla listu i tytułu */
+        .sweet-title { font-size: 3rem; color: var(--accent-red); margin-bottom: 20px; font-family: 'Georgia', serif; font-weight: bold; }
+        .main-message { font-size: 1.4rem; line-height: 1.7; margin-bottom: 60px; color: #444; max-width: 700px; margin-left: auto; margin-right: auto; }
+
+        /* GALERIA ZDJĘĆ - Ulepszona estetyka kart */
+        .moment-category { margin-bottom: 70px; }
+        
+        /* Tytuł kategorii z dolną linią w nowym kolorze */
+        .category-title { 
+            font-size: 2rem; 
+            color: var(--dark-red); 
+            margin-bottom: 30px; 
+            position: relative; 
+            display: inline-block; 
+            padding-bottom: 10px;
+        }
+        .category-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: var(--accent-red);
+            border-radius: 2px;
+        }
+
+        .photo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; justify-items: center; }
+        
+        /* Ulepszona karta zdjęcia: biała ramka, cieniu */
+        .photo-item { 
+            width: 100%; 
+            aspect-ratio: 1/1; 
+            background: #fff; 
+            border-radius: 15px; 
+            overflow: hidden; 
+            box-shadow: 0 5px 20px rgba(0,0,0,0.06); 
+            transition: 0.4s; 
+            border: 6px solid #fff; /* Efekt fizycznej ramki */
+            box-sizing: border-box;
+        }
+        .photo-item:hover { transform: scale(1.05) rotate(2deg); box-shadow: 0 15px 30px rgba(0,0,0,0.1); }
+        .photo-item img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* Twoje oryginalne style dla finalnego przesłania */
+        #final-message { background: var(--bg-color); padding: 40px; border-radius: 25px; margin-top: 70px; box-shadow: 0 5px 25px rgba(0,0,0,0.03); }
+        .gift-hint { font-size: 1.6rem; color: var(--dark-red); font-weight: bold; margin-top: 30px; background: rgba(255,71,87,0.05); padding: 20px; border-radius: 15px; }
+    </style>
+</head>
+<body>
+
+    <div id="start-screen">
+        <h1>Wyzwanie Serca ❤️</h1>
+        <p>Udowodnij, że potrafisz złapać moją miłość!<br>Steruj [wasza emotka] i łap spadające serca.</p>
+        <p><strong>Cel: 30 punktów</strong></p>
+        <button class="btn" onclick="startGame()">START</button>
+    </div>
+
+    <div id="game-container" style="display:none;">
+        <div class="stat">Wynik: <span id="score">0</span> / 30</div>
+        <canvas id="gameCanvas"></canvas>
+    </div>
+
+    <div id="reward-section">
+        <h1 class="sweet-title">Udało się! Jesteś mistrzem! ✨</h1>
+        <p class="main-message">
+            Ale tak naprawdę to ja wygrałam, bo mam Ciebie.<br>
+            Z okazji naszej rocznicy chcę Ci powiedzieć, jak bardzo Cię kocham<br>
+            i jak bardzo dziękuję Ci za każdy wspólny dzień.
+        </p>
+
+        <div class="moment-category">
+            <h2 class="category-title">Mnóstwo wspólnych wyjazdów...🌳</h2>
+            <div class="photo-grid">
+                <div class="photo-item"><img src="wyjazd1.jpg" alt="Wspólny wyjazd 1"></div>
+                <div class="photo-item"><img src="wyjazd2.jpg" alt="Wspólny wyjazd 2"></div>
+                <div class="photo-item"><img src="wyjazd3.jpg" alt="Wspólny wyjazd 3"></div>
+            </div>
+        </div>
+
+        <div class="moment-category">
+            <h2 class="category-title">Tysiące śmiesznych chwil...🤪</h2>
+            <div class="photo-grid">
+                <div class="photo-item"><img src="smieszne1.jpg" alt="Śmieszna chwila 1"></div>
+                <div class="photo-item"><img src="smieszne2.jpg" alt="Śmieszna chwila 2"></div>
+                <div class="photo-item"><img src="smieszne3.jpg" alt="Śmieszna chwila 3"></div>
+            </div>
+        </div>
+
+        <div class="moment-category">
+            <h2 class="category-title">Niezapomnianych wspólnych imprez...🎉</h2>
+            <div class="photo-grid">
+                <div class="photo-item"><img src="impreza1.jpg" alt="Wspólna impreza 1"></div>
+                <div class="photo-item"><img src="impreza2.jpg" alt="Wspólna impreza 2"></div>
+                <div class="photo-item"><img src="impreza3.jpg" alt="Wspólna impreza 3"></div>
+            </div>
+        </div>
+
+        <div id="final-message">
+            <p style="font-size: 1.3rem;">Wierzę, że to dopiero początek i przed nami jeszcze więcej wspaniałych momentów. Nie mogę się doczekać naszej wspólnej przyszłości!</p>
+            <p style="font-size: 1.8rem; color: var(--accent-red); font-weight: bold; margin-top: 25px;">Dziękuję, że jesteś. ❤️</p>
+            
+            <div class="gift-hint">
+                <p>A teraz... Twój fizyczny upominek czeka!</p>
+                <p style="color: #555; font-size: 1.2rem; font-weight: normal; margin-top: 10px;">Szukaj tam, gdzie Twój procesor najbardziej się grzeje... (przy komputerze!)</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreEl = document.getElementById('score');
+        
+        let score = 0;
+        let gameActive = false;
+        let items = [];
+        // Płynne sterowanie
+        let player = { x: 150, y: 0, size: 60, targetX: 150 };
+
+        function startGame() {
+            // Bezpośrednia obsługa przycisku - na pewno zadziała
+            document.getElementById('start-screen').style.display = 'none';
+            document.getElementById('game-container').style.display = 'block';
+            canvas.style.display = 'block';
+            
+            // Dopasowanie rozmiaru dla wygody
+            canvas.width = Math.min(window.innerWidth - 40, 400);
+            canvas.height = Math.min(window.innerHeight * 0.7, 500);
+            player.y = canvas.height - 90;
+            player.x = canvas.width / 2 - player.size / 2;
+            
+            gameActive = true;
+            score = 0;
+            scoreEl.innerText = score;
+            items = [];
+            requestAnimationFrame(update); // Uruchomienie pętli gry
+        }
+
+        // Płynne sterowanie (myszka/dotyk)
+        function handleMove(clientX) {
+            const rect = canvas.getBoundingClientRect();
+            player.targetX = clientX - rect.left - player.size / 2;
+            // Ograniczenia ekranu
+            if (player.targetX < 0) player.targetX = 0;
+            if (player.targetX > canvas.width - player.size) player.targetX = canvas.width - player.size;
+        }
+
+        canvas.addEventListener('mousemove', (e) => handleMove(e.clientX));
+        canvas.addEventListener('touchmove', (e) => {
+            handleMove(e.touches[0].clientX);
+            e.preventDefault(); // Zapobiega przewijaniu strony podczas gry
+        }, {passive: false});
+
+        function spawnItem() {
+            if(Math.random() < 0.045 + (score/1000)) { // Prędkość respawnu rośnie z wynikiem
+                items.push({
+                    x: Math.random() * (canvas.width - 30),
+                    y: -30,
+                    size: 30,
+                    speed: 3.5 + (score / 15), // Prędkość spadania rośnie z wynikiem
+                });
+            }
+        }
+
+        function update() {
+            if(!gameActive) return; // Jeśli gra nieaktywna, zatrzymaj pętlę
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Płynny ruch gracza do celu
+            player.x += (player.targetX - player.x) * 0.2;
+
+            // Rysuj gracza
+            ctx.save();
+            // Cień gracza
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = 'rgba(0,0,0,0.1)';
+            
+            // === TU ZMIENIASZ EMOTKĘ GRACZA ===
+            ctx.font = "50px Arial";
+            ctx.fillText("🧑‍💻", player.x, player.y + 50); 
+            // Możesz zmienić na np. "🏎️" lub Wasze inne zdjęcie/symbol
+            
+            ctx.restore();
+
+            // Przedmioty
+            spawnItem();
+            items.forEach((item, index) => {
+                item.y += item.speed;
+
+                // Rysuj serce z delikatnym blaskiem
+                ctx.save();
+                ctx.fillStyle = "#ff4757"; // Kolor serca
+                ctx.font = `${item.size}px Arial`;
+                ctx.shadowBlur = 5;
+                ctx.shadowColor = 'rgba(255, 71, 87, 0.3)';
+                ctx.fillText("❤️", item.x, item.y);
+                ctx.restore();
+
+                // Kolizja - bardziej precyzyjna
+                if(item.y > player.y && item.y < player.y + player.size &&
+                   item.x > player.x - 10 && item.x < player.x + player.size + 10) {
+                    
+                    score++;
+                    scoreEl.innerText = score;
+                    items.splice(index, 1);
+
+                    if(score >= 30) {
+                        winGame();
+                    }
+                }
+
+                // Usuń poza ekranem
+                if(item.y > canvas.height + 50) items.splice(index, 1);
+            });
+
+            requestAnimationFrame(update); // Następna klatka pętli
+        }
+
+        function winGame() {
+            gameActive = false;
+            document.getElementById('game-container').style.display = 'none';
+            document.getElementById('reward-section').style.display = 'block';
+            
+            // Przejście tła do bieli po wygranej
+            document.body.style.background = "#ffffff";
+            window.scrollTo(0, 0); // Przewiń na górę, żeby widział list
+        }
+    </script>
+</body>
+</html>
