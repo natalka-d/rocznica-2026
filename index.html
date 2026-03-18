@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nasza Rocznica: Wyzwanie Serca ❤️</title>
+    <style>
+        :root { --pink: #ff4d6d; --dark-pink: #c9184a; --light-pink: #fff0f3; }
+        body { margin: 0; background: var(--light-pink); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333; overflow-x: hidden; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        
+        /* EKRAN STARTOWY I GRY */
+        #game-container, #start-screen { text-align: center; max-width: 400px; padding: 20px; margin-top: 50px; }
+        canvas { background: white; border: 4px solid var(--pink); border-radius: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); cursor: none; display: none; max-width: 100%; }
+        h1 { color: var(--pink); font-size: 2rem; margin-bottom: 10px; }
+        .btn { background: var(--pink); color: white; border: none; padding: 15px 30px; font-size: 1.2rem; border-radius: 50px; cursor: pointer; transition: 0.3s; margin-top: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .btn:hover { background: var(--dark-pink); transform: scale(1.05); }
+        .stat { font-size: 1.3rem; margin: 10px; font-weight: bold; color: var(--dark-pink); }
+
+        /* SEKCJA NAGRODY (PO WYGRANEJ) */
+        #reward-section { display: none; width: 100%; max-width: 800px; padding: 40px 20px; text-align: center; animation: fadeIn 2s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .sweet-title { font-size: 2.5rem; color: var(--pink); margin-bottom: 10px; font-family: 'Georgia', serif; }
+        .main-message { font-size: 1.3rem; line-height: 1.6; margin-bottom: 40px; color: #555; }
+
+        /* GALERIA ZDJĘĆ */
+        .moment-category { margin-bottom: 50px; }
+        .category-title { font-size: 1.8rem; color: var(--dark-pink); margin-bottom: 20px; border-bottom: 2px solid var(--pink); display: inline-block; padding-bottom: 5px; }
+        .photo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; justify-items: center; }
+        .photo-item { width: 100%; aspect-ratio: 1/1; background: #ddd; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: transform 0.3s; }
+        .photo-item:hover { transform: scale(1.05); }
+        .photo-item img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* FINALE I PODPOWIEDŹ DO PREZENTU */
+        #final-message { background: white; padding: 30px; border-radius: 20px; border: 2px dashed var(--pink); margin-top: 50px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .gift-hint { font-size: 1.5rem; color: var(--dark-pink); font-weight: bold; margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+    <div id="start-screen">
+        <h1>Wyzwanie Serca ❤️</h1>
+        <p>Udowodnij, że potrafisz złapać moją miłość!<br>Steruj Waszym zdjęciem i łap spadające serca.</p>
+        <p><strong>Cel: 30 punktów</strong></p>
+        <button class="btn" onclick="startGame()">START</button>
+    </div>
+
+    <div id="game-container" style="display:none;">
+        <div class="stat">Punkty: <span id="score">0</span> / 30</div>
+        <canvas id="gameCanvas"></canvas>
+    </div>
+
+    <div id="reward-section">
+        <h1 class="sweet-title">Udało się! Jesteś mistrzem! ✨</h1>
+        <p class="main-message">
+            Ale tak naprawdę to ja wygrałam, bo mam Ciebie.<br>
+            Z okazji naszej rocznicy chcę Ci powiedzieć, jak bardzo Cię kocham<br>
+            i jak bardzo dziękuję Ci za każdy wspólny dzień.
+        </p>
+
+        <div class="moment-category">
+            <h2 class="category-title">Móstwo wspólnych wyjazdów...</h2>
+            <div class="photo-grid">
+                <div class="photo-item"><img src="wyjazd1.jpg" alt="Wspólny wyjazd 1"></div>
+                <div class="photo-item"><img src="wyjazd2.jpg" alt="Wspólny wyjazd 2"></div>
+                <div class="photo-item"><img src="wyjazd3.jpg" alt="Wspólny wyjazd 3"></div>
+            </div>
+        </div>
+
+        <div class="moment-category">
+            <h2 class="category-title">Tysiące śmiesznych chwil...</h2>
+            <div class="photo-grid">
+                <div class="photo-item"><img src="smieszne1.jpg" alt="Śmieszna chwila 1"></div>
+                <div class="photo-item"><img src="smieszne2.jpg" alt="Śmieszna chwila 2"></div>
+                <div class="photo-item"><img src="smieszne3.jpg" alt="Śmieszna chwila 3"></div>
+            </div>
+        </div>
+
+        <div class="moment-category">
+            <h2 class="category-title">Niezapomnianych wspólnych imprez...</h2>
+            <div class="photo-grid">
+                <div class="photo-item"><img src="impreza1.jpg" alt="Wspólna impreza 1"></div>
+                <div class="photo-item"><img src="impreza2.jpg" alt="Wspólna impreza 2"></div>
+                <div class="photo-item"><img src="impreza3.jpg" alt="Wspólna impreza 3"></div>
+            </div>
+        </div>
+
+        <div id="final-message">
+            <p style="font-size: 1.2rem;">Wierzę, że to dopiero początek i przed nami jeszcze więcej wspaniałych momentów. Nie mogę się doczekać naszej wspólnej przyszłości!</p>
+            <p style="font-size: 1.5rem; color: var(--pink); font-weight: bold; margin-top: 20px;">Dziękuję, że jesteś. ❤️</p>
+            
+            <div class="gift-hint">
+                <p>A teraz... Twój fizyczny upominek czeka!</p>
+                <p style="color: #555; font-size: 1.1rem; font-weight: normal;">Szukaj w [wpisz tu miejsce, gdzie schowasz prezent, np. w szufladzie biurka]!</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreEl = document.getElementById('score');
+        
+        let score = 0;
+        let gameActive = false;
+        let items = [];
+        let player = { x: 150, y: 0, size: 50 };
+
+        function startGame() {
+            document.getElementById('start-screen').style.display = 'none';
+            document.getElementById('game-container').style.display = 'block';
+            canvas.style.display = 'block';
+            
+            // Dopasowanie rozmiaru
+            canvas.width = Math.min(window.innerWidth, 350);
+            canvas.height = 450;
+            player.y = canvas.height - 70;
+            
+            gameActive = true;
+            score = 0;
+            scoreEl.innerText = score;
+            items = [];
+            update();
+        }
+
+        // Sterowanie (myszka/dotyk)
+        function setPlayerX(clientX) {
+            const rect = canvas.getBoundingClientRect();
+            player.x = clientX - rect.left - player.size / 2;
+            if (player.x < 0) player.x = 0;
+            if (player.x > canvas.width - player.size) player.x = canvas.width - player.size;
+        }
+
+        canvas.addEventListener('mousemove', (e) => setPlayerX(e.clientX));
+        canvas.addEventListener('touchmove', (e) => {
+            setPlayerX(e.touches[0].clientX);
+            e.preventDefault();
+        }, {passive: false});
+
+        function spawnItem() {
+            if(Math.random() < 0.04) { // Częstotliwość spadania
+                items.push({
+                    x: Math.random() * (canvas.width - 25),
+                    y: -30,
+                    size: 25,
+                    speed: 3 + (score / 10) // Prędkość rośnie z punktami!
+                });
+            }
+        }
+
+        function update() {
+            if(!gameActive) return;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Rysuj gracza (Wasze zdjęcie/ikonka)
+            ctx.font = "45px Arial";
+            ctx.fillText("👩‍❤️‍👨", player.x, player.y + 45);
+
+            // Przedmioty
+            spawnItem();
+            items.forEach((item, index) => {
+                item.y += item.speed;
+                
+                // Rysuj serce
+                ctx.fillStyle = "#ff4d6d";
+                ctx.font = `${item.size}px Arial`;
+                ctx.fillText("❤️", item.x, item.y);
+
+                // Kolizja
+                if(item.y > player.y && item.y < player.y + player.size &&
+                   item.x > player.x && item.x < player.x + player.size + player.size/2) {
+                    
+                    score++;
+                    scoreEl.innerText = score;
+                    items.splice(index, 1);
+
+                    if(score >= 30) {
+                        winGame();
+                    }
+                }
+
+                // Usuń poza ekranem
+                if(item.y > canvas.height) items.splice(index, 1);
+            });
+
+            requestAnimationFrame(update);
+        }
+
+        function winGame() {
+            gameActive = false;
+            document.getElementById('game-container').style.display = 'none';
+            document.getElementById('reward-section').style.display = 'block';
+            window.scrollTo(0, 0); // Przewiń na górę, żeby widział nagrodę
+        }
+    </script>
+</body>
+</html>
